@@ -1,0 +1,35 @@
+sormas:
+    dbHost: ""
+    dbName: "sormas_db"
+    dbNameAudit: "sormas_audit"
+    domainName: "sormas"
+    emailSenderAddress: ""
+    emailSenderName: ""
+    epidPrefix: ""
+    jmx: "4096m"
+    latitude: ""
+    longitute: ""
+    locale: "en"
+    mailFrom: ""
+    mailHost: ""
+    pgPassword: "sormas_user"
+    pgUsername: "changeme"
+    serverUrl: "sormas.exampale.com"
+    version: "1.35.0"
+    separator: ","
+ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/app-root: /sormas-ui
+    hosts:
+      - host: sormas.exampale.com
+        paths:
+          - /
+    tls:
+      - hosts:
+        - sormas.exampale.com
+        secretName: sormas-tls
