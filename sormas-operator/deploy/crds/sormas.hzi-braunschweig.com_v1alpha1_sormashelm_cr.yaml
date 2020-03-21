@@ -1,0 +1,58 @@
+apiVersion: sormas.hzi-braunschweig.com/v1alpha1
+kind: SormasHelm
+metadata:
+  name: example-sormashelm
+spec:
+  # Default values copied from <project_dir>/helm-charts/sormas-helm/values.yaml
+  
+  affinity: {}
+  fullnameOverride: ""
+  image:
+    pullPolicy: IfNotPresent
+    repository: hzibraunschweig/sormas-application
+    tage: 1.35.0
+  imagePullSecrets: []
+  ingress:
+    annotations: {}
+    enabled: false
+    hosts:
+    - host: chart-example.local
+      paths: []
+    tls: []
+  nameOverride: ""
+  nodeSelector: {}
+  persistence:
+    accessMode: ReadWriteOnce
+    enabled: true
+    storageSize: 10Gi
+  podSecurityContext: {}
+  replicaCount: 1
+  resources: {}
+  securityContext: {}
+  service:
+    port: 6080
+    type: ClusterIP
+  serviceAccount:
+    create: true
+    name: null
+  sormas:
+    dbHost: ""
+    dbName: sormas_db
+    dbNameAudit: sormas_audit
+    domainName: sormas
+    emailSenderAddress: ""
+    emailSenderName: Notification
+    epidPrefix: GHA
+    jmx: 4096m
+    latitude: "0.0236"
+    locale: en
+    longitute: "37.9062"
+    mailFrom: ""
+    mailHost: ""
+    pgPassword: ""
+    pgUsername: ""
+    separator: ;
+    serverUrl: ""
+    version: 1.35.0
+  tolerations: []
+  

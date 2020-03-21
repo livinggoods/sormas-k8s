@@ -1,0 +1,22 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: sormashelms.sormas.hzi-braunschweig.com
+spec:
+  group: sormas.hzi-braunschweig.com
+  names:
+    kind: SormasHelm
+    listKind: SormasHelmList
+    plural: sormashelms
+    singular: sormashelm
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      type: object
+      x-kubernetes-preserve-unknown-fields: true
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true

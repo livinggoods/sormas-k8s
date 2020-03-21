@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sormas-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: sormas-operator
+  template:
+    metadata:
+      labels:
+        name: sormas-operator
+    spec:
+      serviceAccountName: sormas-operator
+      containers:
+        - name: sormas-operator
+          # Replace this with the built image name
+          image: nicokahlert/sormas-operator:0.0.1-alpha
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "sormas-operator"
