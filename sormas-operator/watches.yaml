@@ -1,0 +1,5 @@
+---
+- version: v1alpha1
+  group: sormas.hzi-braunschweig.com
+  kind: SormasHelm
+  chart: helm-charts/sormas-helm

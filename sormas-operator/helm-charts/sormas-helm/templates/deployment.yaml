@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sormas-helm.fullname" . }}
+  labels:
+    {{- include "sormas-helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sormas-helm.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "sormas-helm.fullname" . }}
+  volumeClaimTemplates:
+    {{- if .Values.persistence.enabled }}
+    - metadata:
+        name: {{ include "sormas-helm.fullname" . }}-data
+        labels:
+{{ include "sormas-helm.labels" . | indent 10 }}
+        {{- if .Values.persistence.annotations }}
+        annotations:
+{{ toYaml .Values.persistence.annotations | indent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.storageSize | quote }}
+        {{- if .Values.persistence.storageClass }}
+        {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: "{{ .Values.persistence.storageClass }}"
+        {{- end }}
+        {{- end }}
+        {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "sormas-helm.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "sormas-helm.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:1.35.0"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: "Africa/Nairobi"
+            - name: DB_HOST
+              value: {{ .Values.sormas.dbHost }}
+            - name: DB_NAME
+              value: {{ .Values.sormas.dbName }}
+            - name: DB_NAME_AUDIT
+              value: {{ .Values.sormas.dbNameAudit }}
+            - name: DOMAIN_NAME
+              value: {{ .Values.sormas.domainName }}
+            - name: EMAIL_SENDER_ADDRESS
+              value: {{ .Values.sormas.emailSenderAddress }}
+            - name: EMAIL_SENDER_NAME
+              value: {{ .Values.sormas.emailSenderName }}
+            - name: EPIDPREFIX
+              value: {{ .Values.sormas.epidPrefix }}
+            - name: JVM_MAX
+              value: {{ .Values.sormas.jmx }}
+            - name: LATITUDE
+              value: "{{ .Values.sormas.latitude }}"
+            - name: LONGITUDE
+              value: "{{ .Values.sormas.longitute }}"
+            - name: LOCALE
+              value: {{ .Values.sormas.locale }}
+            - name: MAIL_FROM
+              value: {{ .Values.sormas.mailFrom }}
+            - name: MAIL_HOST
+              value: {{ .Values.sormas.mailHost }}
+            - name: PGPASSWORD
+              value: {{ .Values.sormas.pgPassword }}
+            - name: SEPARATOR
+              value: {{ .Values.sormas.pgUsername }}
+            - name: SORMAS_POSTGRES_PASSWORD
+              value: {{ .Values.sormas.pgPassword }}
+            - name: SORMAS_POSTGRES_USER
+              value: {{ .Values.sormas.pgUsername }}
+            - name: SORMAS_SERVER_URL
+              value: {{ .Values.sormas.serverUrl }}
+            - name: SORMAS_VERSION
+              value: {{ .Values.sormas.version }}
+            - name: SEPARATOR
+              value: "{{ .Values.sormas.separator }}"
+          ports:
+            - name: http
+              containerPort: 6080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /root/deploy/sormas/backup
+              name: {{ include "sormas-helm.fullname" . }}-data
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
